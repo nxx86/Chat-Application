@@ -1,5 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
+import ChatWindow from "./components/chatWindow";
+import ContactWidnow from "./components/contactWindow";
 
 type user = {
   name: string;
@@ -26,12 +28,9 @@ export default function Home() {
 
   return (
     <>
-      <div>
-        <ul>
-          {users.map((user) => {
-            return <li key={user._id}>{user.name}</li>;
-          })}
-        </ul>
+      <div className="flex">
+        <ContactWidnow />
+        <ChatWindow />
       </div>
     </>
   );
