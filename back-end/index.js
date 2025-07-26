@@ -8,10 +8,26 @@ const io = new Server(server);
 const mongoose = require("mongoose");
 const connectDB = require("./config/connectDB");
 const cors = require("cors");
+const jwt = require("jsonwebtoken");
 
 app.use(express.json());
 app.use(cors());
 app.use("/users", require("./routes/User"));
+app.post("/refresh", (req, res) => {
+  const refreshToken = req.cookies.refreshToken;
+  if (!refreshToken) return res.sendStatus(403);
+
+  jwt.verify(refreshToken, process.env.JWT_REFRESH_SECRET, (err, user) => {
+    if (err) return res.sendStatus(403);
+    const newAccessToken = jwt.sign(
+      { userId: user.userId, email: user.email },
+      process.env.JWT_SECRET,
+      { expiresIn: "15m" }
+    );
+    res.json({ token: newAccessToken });
+  });
+});
+
 io.on("connection", (socket) => {
   console.log("user connected");
   socket.on("chat message", (msg) => {
